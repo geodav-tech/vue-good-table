@@ -14246,19 +14246,25 @@ var script$6 = {
       });
     },
     changePage: function changePage(value) {
-      if (this.paginationOptions.enabled) {
-        var paginationWidget = this.$refs.paginationBottom;
+      var _this$paginationOptio = this.paginationOptions,
+          enabled = _this$paginationOptio.enabled,
+          position = _this$paginationOptio.position;
+      var _this$$refs = this.$refs,
+          paginationBottom = _this$$refs.paginationBottom,
+          paginationTop = _this$$refs.paginationTop;
 
-        if (this.paginationOptions.position === 'top') {
-          paginationWidget = this.$refs.paginationTop;
+      if (enabled) {
+        if ((position === 'top' || position === 'both') && paginationTop) {
+          paginationTop.currentPage = value;
         }
 
-        if (paginationWidget) {
-          paginationWidget.currentPage = value; // we also need to set the currentPage
-          // for table.
+        if ((position === 'bottom' || position === 'both') && paginationBottom) {
+          paginationBottom.currentPage = value;
+        } // we also need to set the currentPage
+        // for table.
 
-          this.currentPage = value;
-        }
+
+        this.currentPage = value;
       }
     },
     pageChangedEvent: function pageChangedEvent() {
@@ -14279,7 +14285,19 @@ var script$6 = {
       }
     },
     perPageChanged: function perPageChanged(pagination) {
-      this.currentPerPage = pagination.currentPerPage; //* update perPage also
+      this.currentPerPage = pagination.currentPerPage; // ensure that both sides of pagination are in agreement
+      // this fixes changes during position = 'both'
+
+      var paginationPosition = this.paginationOptions.position;
+
+      if (this.$refs.paginationTop && (paginationPosition === 'top' || paginationPosition === 'both')) {
+        this.$refs.paginationTop.currentPerPage = this.currentPerPage;
+      }
+
+      if (this.$refs.paginationBottom && (paginationPosition === 'bottom' || paginationPosition === 'both')) {
+        this.$refs.paginationBottom.currentPerPage = this.currentPerPage;
+      } //* update perPage also
+
 
       var perPageChangedEvent = this.pageChangedEvent();
       this.$emit('on-per-page-change', perPageChangedEvent);
@@ -14581,20 +14599,20 @@ var script$6 = {
     initializePagination: function initializePagination() {
       var _this11 = this;
 
-      var _this$paginationOptio = this.paginationOptions,
-          enabled = _this$paginationOptio.enabled,
-          perPage = _this$paginationOptio.perPage,
-          position = _this$paginationOptio.position,
-          perPageDropdown = _this$paginationOptio.perPageDropdown,
-          dropdownAllowAll = _this$paginationOptio.dropdownAllowAll,
-          nextLabel = _this$paginationOptio.nextLabel,
-          prevLabel = _this$paginationOptio.prevLabel,
-          rowsPerPageLabel = _this$paginationOptio.rowsPerPageLabel,
-          ofLabel = _this$paginationOptio.ofLabel,
-          pageLabel = _this$paginationOptio.pageLabel,
-          allLabel = _this$paginationOptio.allLabel,
-          setCurrentPage = _this$paginationOptio.setCurrentPage,
-          mode = _this$paginationOptio.mode;
+      var _this$paginationOptio2 = this.paginationOptions,
+          enabled = _this$paginationOptio2.enabled,
+          perPage = _this$paginationOptio2.perPage,
+          position = _this$paginationOptio2.position,
+          perPageDropdown = _this$paginationOptio2.perPageDropdown,
+          dropdownAllowAll = _this$paginationOptio2.dropdownAllowAll,
+          nextLabel = _this$paginationOptio2.nextLabel,
+          prevLabel = _this$paginationOptio2.prevLabel,
+          rowsPerPageLabel = _this$paginationOptio2.rowsPerPageLabel,
+          ofLabel = _this$paginationOptio2.ofLabel,
+          pageLabel = _this$paginationOptio2.pageLabel,
+          allLabel = _this$paginationOptio2.allLabel,
+          setCurrentPage = _this$paginationOptio2.setCurrentPage,
+          mode = _this$paginationOptio2.mode;
 
       if (typeof enabled === 'boolean') {
         this.paginate = enabled;
