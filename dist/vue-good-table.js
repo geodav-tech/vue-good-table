@@ -1,5 +1,5 @@
 /**
- * vue-good-table v2.16.4
+ * vue-good-table v2.16.5a
  * (c) 2018-present xaksis <shay@crayonbits.com>
  * https://github.com/xaksis/vue-good-table
  * Released under the MIT License.
@@ -12,6 +12,8 @@
 }(this, (function (exports) { 'use strict';
 
   function _typeof(obj) {
+    "@babel/helpers - typeof";
+
     if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") {
       _typeof = function (obj) {
         return typeof obj;
@@ -26,19 +28,15 @@
   }
 
   function _slicedToArray(arr, i) {
-    return _arrayWithHoles(arr) || _iterableToArrayLimit(arr, i) || _nonIterableRest();
+    return _arrayWithHoles(arr) || _iterableToArrayLimit(arr, i) || _unsupportedIterableToArray(arr, i) || _nonIterableRest();
   }
 
   function _toConsumableArray(arr) {
-    return _arrayWithoutHoles(arr) || _iterableToArray(arr) || _nonIterableSpread();
+    return _arrayWithoutHoles(arr) || _iterableToArray(arr) || _unsupportedIterableToArray(arr) || _nonIterableSpread();
   }
 
   function _arrayWithoutHoles(arr) {
-    if (Array.isArray(arr)) {
-      for (var i = 0, arr2 = new Array(arr.length); i < arr.length; i++) arr2[i] = arr[i];
-
-      return arr2;
-    }
+    if (Array.isArray(arr)) return _arrayLikeToArray(arr);
   }
 
   function _arrayWithHoles(arr) {
@@ -46,10 +44,11 @@
   }
 
   function _iterableToArray(iter) {
-    if (Symbol.iterator in Object(iter) || Object.prototype.toString.call(iter) === "[object Arguments]") return Array.from(iter);
+    if (typeof Symbol !== "undefined" && Symbol.iterator in Object(iter)) return Array.from(iter);
   }
 
   function _iterableToArrayLimit(arr, i) {
+    if (typeof Symbol === "undefined" || !(Symbol.iterator in Object(arr))) return;
     var _arr = [];
     var _n = true;
     var _d = false;
@@ -75,12 +74,29 @@
     return _arr;
   }
 
+  function _unsupportedIterableToArray(o, minLen) {
+    if (!o) return;
+    if (typeof o === "string") return _arrayLikeToArray(o, minLen);
+    var n = Object.prototype.toString.call(o).slice(8, -1);
+    if (n === "Object" && o.constructor) n = o.constructor.name;
+    if (n === "Map" || n === "Set") return Array.from(o);
+    if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray(o, minLen);
+  }
+
+  function _arrayLikeToArray(arr, len) {
+    if (len == null || len > arr.length) len = arr.length;
+
+    for (var i = 0, arr2 = new Array(len); i < len; i++) arr2[i] = arr[i];
+
+    return arr2;
+  }
+
   function _nonIterableSpread() {
-    throw new TypeError("Invalid attempt to spread non-iterable instance");
+    throw new TypeError("Invalid attempt to spread non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method.");
   }
 
   function _nonIterableRest() {
-    throw new TypeError("Invalid attempt to destructure non-iterable instance");
+    throw new TypeError("Invalid attempt to destructure non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method.");
   }
 
   /**
@@ -1287,7 +1303,7 @@
 
   var lodash_assign = assign;
 
-  var commonjsGlobal = typeof window !== 'undefined' ? window : typeof global !== 'undefined' ? global : typeof self !== 'undefined' ? self : {};
+  var commonjsGlobal = typeof globalThis !== 'undefined' ? globalThis : typeof window !== 'undefined' ? window : typeof global !== 'undefined' ? global : typeof self !== 'undefined' ? self : {};
 
   function createCommonjsModule(fn, module) {
   	return module = { exports: {} }, fn(module, module.exports), module.exports;
@@ -8214,6 +8230,8 @@
               colStyles.push(_this.getWidthStyle(cell));
             } else {
               colStyles.push({
+                minWidth: _this.columns[i].width ? _this.columns[i].width : 'auto',
+                maxWidth: _this.columns[i].width ? _this.columns[i].width : 'auto',
                 width: _this.columns[i].width ? _this.columns[i].width : 'auto'
               });
             }
@@ -8224,6 +8242,8 @@
       },
       getColumnStyle: function getColumnStyle(column, index) {
         var styleObject = {
+          minWidth: column.width ? column.width : 'auto',
+          maxWidth: column.width ? column.width : 'auto',
           width: column.width ? column.width : 'auto'
         }; //* if fixed header we need to get width from original table
 
@@ -8259,7 +8279,7 @@
     /* style */
     const __vue_inject_styles__$4 = undefined;
     /* scoped */
-    const __vue_scope_id__$4 = "data-v-1a3bd028";
+    const __vue_scope_id__$4 = "data-v-7068df50";
     /* module identifier */
     const __vue_module_identifier__$4 = undefined;
     /* functional template */
@@ -11671,19 +11691,25 @@
         this.emitSelectedRows();
       },
       changePage: function changePage(value) {
-        if (this.paginationOptions.enabled) {
-          var paginationWidget = this.$refs.paginationBottom;
+        var _this$paginationOptio = this.paginationOptions,
+            enabled = _this$paginationOptio.enabled,
+            position = _this$paginationOptio.position;
+        var _this$$refs = this.$refs,
+            paginationBottom = _this$$refs.paginationBottom,
+            paginationTop = _this$$refs.paginationTop;
 
-          if (this.paginationOptions.position === 'top') {
-            paginationWidget = this.$refs.paginationTop;
+        if (enabled) {
+          if ((position === 'top' || position === 'both') && paginationTop) {
+            paginationTop.currentPage = value;
           }
 
-          if (paginationWidget) {
-            paginationWidget.currentPage = value; // we also need to set the currentPage
-            // for table.
+          if ((position === 'bottom' || position === 'both') && paginationBottom) {
+            paginationBottom.currentPage = value;
+          } // we also need to set the currentPage
+          // for table.
 
-            this.currentPage = value;
-          }
+
+          this.currentPage = value;
         }
       },
       pageChangedEvent: function pageChangedEvent() {
@@ -11704,7 +11730,19 @@
         }
       },
       perPageChanged: function perPageChanged(pagination) {
-        this.currentPerPage = pagination.currentPerPage; //* update perPage also
+        this.currentPerPage = pagination.currentPerPage; // ensure that both sides of pagination are in agreement
+        // this fixes changes during position = 'both'
+
+        var paginationPosition = this.paginationOptions.position;
+
+        if (this.$refs.paginationTop && (paginationPosition === 'top' || paginationPosition === 'both')) {
+          this.$refs.paginationTop.currentPerPage = this.currentPerPage;
+        }
+
+        if (this.$refs.paginationBottom && (paginationPosition === 'bottom' || paginationPosition === 'both')) {
+          this.$refs.paginationBottom.currentPerPage = this.currentPerPage;
+        } //* update perPage also
+
 
         var perPageChangedEvent = this.pageChangedEvent();
         this.$emit('on-per-page-change', perPageChangedEvent);
@@ -12002,20 +12040,20 @@
       initializePagination: function initializePagination() {
         var _this5 = this;
 
-        var _this$paginationOptio = this.paginationOptions,
-            enabled = _this$paginationOptio.enabled,
-            perPage = _this$paginationOptio.perPage,
-            position = _this$paginationOptio.position,
-            perPageDropdown = _this$paginationOptio.perPageDropdown,
-            dropdownAllowAll = _this$paginationOptio.dropdownAllowAll,
-            nextLabel = _this$paginationOptio.nextLabel,
-            prevLabel = _this$paginationOptio.prevLabel,
-            rowsPerPageLabel = _this$paginationOptio.rowsPerPageLabel,
-            ofLabel = _this$paginationOptio.ofLabel,
-            pageLabel = _this$paginationOptio.pageLabel,
-            allLabel = _this$paginationOptio.allLabel,
-            setCurrentPage = _this$paginationOptio.setCurrentPage,
-            mode = _this$paginationOptio.mode;
+        var _this$paginationOptio2 = this.paginationOptions,
+            enabled = _this$paginationOptio2.enabled,
+            perPage = _this$paginationOptio2.perPage,
+            position = _this$paginationOptio2.position,
+            perPageDropdown = _this$paginationOptio2.perPageDropdown,
+            dropdownAllowAll = _this$paginationOptio2.dropdownAllowAll,
+            nextLabel = _this$paginationOptio2.nextLabel,
+            prevLabel = _this$paginationOptio2.prevLabel,
+            rowsPerPageLabel = _this$paginationOptio2.rowsPerPageLabel,
+            ofLabel = _this$paginationOptio2.ofLabel,
+            pageLabel = _this$paginationOptio2.pageLabel,
+            allLabel = _this$paginationOptio2.allLabel,
+            setCurrentPage = _this$paginationOptio2.setCurrentPage,
+            mode = _this$paginationOptio2.mode;
 
         if (typeof enabled === 'boolean') {
           this.paginate = enabled;
@@ -12168,7 +12206,13 @@
         if (typeof clearSelectionText === 'string') {
           this.clearSelectionText = clearSelectionText;
         }
-      }
+      } // initializeColumns() {
+      //   // take care of default sort on mount
+      //   if (this.defaultSortBy) {
+      //     this.handleDefaultSort();
+      //   }
+      // },
+
     },
     mounted: function mounted() {
       if (this.perPage) {
